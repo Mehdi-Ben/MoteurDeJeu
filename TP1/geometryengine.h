@@ -61,6 +61,7 @@ public:
     GeometryEngine();
     virtual ~GeometryEngine();
     void initPlaneGeometry(const int nbPtsH,const int nbPtsV,const int pas);
+    void initPlaneGeometry16();
     void drawCubeGeometry(QOpenGLShaderProgram *program);
 
     void initPlaneCubeGeometry();

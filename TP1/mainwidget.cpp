@@ -188,7 +188,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 7.0, fov = 100.0;
+    const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -211,6 +211,7 @@ void MainWidget::paintGL()
     matrix.translate(0.0, 0.0, -5.0);
     matrix.rotate(rotation);
 
+    matrix.lookAt(QVector3D(0.0f, 1.0f, 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]

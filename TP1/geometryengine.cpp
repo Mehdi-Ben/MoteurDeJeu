@@ -52,7 +52,7 @@
 
 #include <QVector2D>
 #include <QVector3D>
-
+#include <QImage>
 struct VertexData
 {
     QVector3D position;
@@ -72,10 +72,11 @@ GeometryEngine::GeometryEngine()
     // Initializes cube geometry and transfers it to VBOs
     //initCubeGeometry();
     //initPlaneCubeGeometry();
-    const int v = 16;
-    const int h = 16;
-    const int p = 2;
-    initPlaneGeometry(v,h,p);
+    //const int v = 16;
+    //const int h = 16;
+    //const int p = 2;
+    //initPlaneGeometry(v,h,p);
+    initPlaneGeometry16();
 }
 
 GeometryEngine::~GeometryEngine()
@@ -154,6 +155,51 @@ void GeometryEngine::initCubeGeometry()
     indexBuf.allocate(indices, 34 * sizeof(GLushort));
 //! [1]
 }
+void GeometryEngine::initPlaneGeometry16()
+{
+    const int tailleTabPts = 256;
+    const int tailleTabIndex = 1350;
+    VertexData vertices[tailleTabPts];
+    GLushort indices[tailleTabIndex];
+    QImage hMap = QImage(":/heightMap.png");
+    int cpt = 0;
+    for(int y=0;y<16;y++)
+    {
+        for(int x=0;x<16;x++)
+        {
+            vertices[cpt] = {QVector3D(((2*x)/15.0)-1, ((2*y)/15.0)-1, hMap.pixelColor(x,y).value()/255.0), QVector2D(x/15.0,y/15.0)};
+            cpt++;
+        }
+    }
+    //Remplissage tableau index
+    unsigned short index = 0;
+    for(unsigned short j=0;j<15;j++) //Pour chaque face
+    {
+        for(unsigned short i=0;i<15;i++){
+            //il faut 2 triangles
+            indices[index++]=i+(j*16);
+            indices[index++]=i+(j*16)+1;
+            indices[index++]=i+((j+1)*16);
+
+            indices[index++]=i+((j+1)*16);
+            indices[index++]=i+(j*16)+1;
+            indices[index++]=i+((j+1)*16)+1;
+        }
+
+    }
+
+    //! [1]
+        // Transfer vertex data to VBO 0
+        arrayBuf.bind();
+        arrayBuf.allocate(vertices, 256 * sizeof(VertexData));
+
+        // Transfer index data to VBO 1
+        indexBuf.bind();
+        indexBuf.allocate(indices, 1350 * sizeof(GLushort));
+    //! [1]
+
+}
+
 
 void GeometryEngine::initPlaneGeometry(const int nbPtsH,const int nbPtsV,const int pas)
 {
@@ -325,6 +371,6 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLE_STRIP, 1412, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, 1350, GL_UNSIGNED_SHORT, 0);
 }
 //! [2]
