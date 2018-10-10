@@ -10,7 +10,7 @@ class camera
 public:
     camera();
     camera(QVector3D position, QVector3D pointCible, QVector3D axeVertical,float sensibilite, float vitesse);
-    void orienter(int xRel, int yRel);
+    void orienter(int xRel, int yRel, int zRel);
     void deplacer(QKeyEvent* event);
     void lookAt(QMatrix4x4 &modelview);
     void setPointcible(QVector3D pointCible);

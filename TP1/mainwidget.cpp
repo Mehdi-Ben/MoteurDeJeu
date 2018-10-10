@@ -104,10 +104,18 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 void MainWidget::mouseMoveEvent(QMouseEvent *event) // fonction virtuelle de QWidget
 {
     this->setMouseTracking(true);
-    QPoint positionSouris = event->pos();
-    cam.orienter(positionSouris.x(), positionSouris.y());
+    QPoint positionSouris = QCursor::pos();
+    //cam.orienter(positionSouris.x()-(this->width()/2),positionSouris.y()-(this->height()/2),0);
+    float x = ((positionSouris.x()*360)/this->width()-180);
+    float y = ((positionSouris.y()*360)/this->height()-180);
+    fleeCam.updatePitchX(y);
+    fleeCam.updateRollZ(x);
 }
-
+//0 x width
+// 0 x/width 1
+// 0 (x*360)/width 360
+//-180 ((x*360)/width)-180 180
+//-180 x 180
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
@@ -136,7 +144,36 @@ void MainWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_Minus : vitesseRota-= 0.1;
 
     }
-    cam.deplacer(event);
+
+        // Avancée de la caméra
+        if(event->key() == Qt::Key_Up)
+        {
+            fleeCam.updatePosY(1);
+        }
+
+
+        // Recul de la caméra
+
+        if(event->key() == Qt::Key_Down)
+        {
+            fleeCam.updatePosY(-1);
+        }
+
+
+        // Déplacement vers la gauche
+
+        if(event->key() == Qt::Key_Left)
+        {
+            fleeCam.updatePosX(-1);
+        }
+
+
+        // Déplacement vers la droite
+
+        if(event->key() == Qt::Key_Right)
+        {
+            fleeCam.updatePosX(1);
+        }
     update();
 }
 
@@ -167,8 +204,8 @@ void MainWidget::initializeGL()
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000/fps,this);
-
-    cam = camera(QVector3D(1, 1, 1), QVector3D(0, 0, 0), QVector3D(0, 1, 0), 0.5, 0.5);
+    fleeCam = fleecam();
+    //cam = camera(QVector3D(3, 3, 3), QVector3D(0, 0, 0), QVector3D(0, 0, 1), 0.01, 0.5);
 }
 
 //! [3]
@@ -217,7 +254,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 15.0, fov = 45.0;
+    const qreal zNear = 1.0, zFar = 100.0, fov = 70.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -238,9 +275,13 @@ void MainWidget::paintGL()
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(0.0, 0.0, -5.0);
-    matrix.rotate(rotation);
+    //matrix.rotate(rotation);
     //matrix.lookAt(QVector3D(1.0f*cos(alpha), 1.0f*sin(alpha), 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
-    cam.lookAt(matrix);
+    //cam.lookAt(matrix);
+    matrix.rotate(fleeCam.pitchX,QVector3D(1,0,0));
+    //matrix.rotate(fleeCam.headingY,QVector3D(0,1,0));
+    matrix.rotate(fleeCam.rollZ,QVector3D(0,0,1));
+    matrix.translate(fleeCam.posX,fleeCam.posY,fleeCam.posZ);
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]

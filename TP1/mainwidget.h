@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include "geometryengine.h"
+#include "fleecam.h"
 #include "camera.h"
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -69,7 +70,7 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit MainWidget(QWidget *parent = 0,int fps = 60);
-    ~MainWidget();
+    ~MainWidget() override;
     int fps;
     float vitesseRota;
 
@@ -79,9 +80,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e) override;
     void timerEvent(QTimerEvent *e) override;
 
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;
@@ -104,6 +105,7 @@ private:
     QQuaternion rotation;
     double alpha;
     camera cam;
+    fleecam fleeCam;
 };
 
 #endif // MAINWIDGET_H

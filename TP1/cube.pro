@@ -8,11 +8,13 @@ SOURCES += main.cpp
 SOURCES += \
     mainwidget.cpp \
     geometryengine.cpp \
+    fleecam.cpp \
     camera.cpp
 
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
+    fleecam.h \
     camera.h
 
 RESOURCES += \

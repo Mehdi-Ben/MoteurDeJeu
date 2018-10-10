@@ -3,7 +3,7 @@
 #endif
 #include "camera.h"
 
-camera::camera(): phi(0.0), theta(0.0), orientation(), axeVerti(0, 0, 1), depLat(), position(), pointCible(), sensi(0.0),vitesse(0.0)
+camera::camera(): phi(0.0), theta(0.0), orientation(), axeVerti(0.0, 0.0, 1.0), depLat(), position(), pointCible(), sensi(0.0),vitesse(0.0)
 {
 
 }
@@ -16,8 +16,9 @@ camera::camera(QVector3D position, QVector3D pointCible, QVector3D axeVerti,floa
 
 }
 
-void camera::orienter(int xRel, int yRel)
+void camera::orienter(int xRel, int yRel, int zRel)
 {
+
     // Récupération des angles
 
     phi += -yRel * sensi;
@@ -26,17 +27,17 @@ void camera::orienter(int xRel, int yRel)
 
     // Limitation de l'angle phi
 
-    if(phi > 89.0)
-        phi = 89.0;
+    if(phi > 179)
+        phi = 179.0;
 
-    else if(phi < -89.0)
-        phi = -89.0;
+    else if(phi < -179)
+        phi = -179.0;
 
 
     // Conversion des angles en radian
 
-    float phiRadian = phi * M_PI / 180;
-    float thetaRadian = theta * M_PI / 180;
+    float phiRadian = phi * M_PI / 180.0;
+    float thetaRadian = theta * M_PI / 180.0;
 
 
     // Si l'axe vertical est l'axe X
@@ -65,7 +66,7 @@ void camera::orienter(int xRel, int yRel)
 
     // Sinon c'est l'axe Z
 
-    else
+    else if(axeVerti.z() == 1.0)
     {
         // Calcul des coordonnées sphériques
 
@@ -74,16 +75,21 @@ void camera::orienter(int xRel, int yRel)
         orientation.setZ(sin(phiRadian));
     }
 
+    //orientation = QVector3D(xRel-position.x(),yRel-position.y(),zRel-position.z());
 
     // Calcul de la normale
 
-    depLat.crossProduct(axeVerti, orientation);
+    depLat = QVector3D::crossProduct(axeVerti, orientation);
     depLat.normalize();
+    //orientation.normalize();
 
 
     // Calcul du point ciblé pour OpenGL
 
     pointCible = position + orientation;
+    //pointCible.normalize();
+
+
 }
 
 void camera::deplacer(QKeyEvent* event)
@@ -173,7 +179,7 @@ void camera::setPointcible(QVector3D pointCible)
 
         // Sinon c'est l'axe Z
 
-        else
+        else if(axeVerti.z() == 1.0)
         {
             // Calcul des angles
 
