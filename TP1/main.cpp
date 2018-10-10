@@ -68,7 +68,17 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
     MainWidget widget;
+    widget.fps=60;
     widget.show();
+    /*MainWidget widget1;
+    widget1.fps=10;
+    widget1.show();
+    MainWidget widget2;
+    widget2.fps=100;
+    widget2.show();
+    MainWidget widget3;
+    widget3.fps=1000;
+    widget3.show();*/
 #else
     QLabel note("OpenGL Support required");
     note.show();

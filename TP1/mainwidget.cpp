@@ -49,16 +49,18 @@
 ****************************************************************************/
 
 #include "mainwidget.h"
-
 #include <QMouseEvent>
 
 #include <math.h>
 
-MainWidget::MainWidget(QWidget *parent) :
+MainWidget::MainWidget(QWidget *parent,int fps) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0)
+    angularSpeed(0),
+    fps(fps),
+    alpha(0),
+    vitesseRota(0)
 {
 }
 
@@ -99,12 +101,19 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 }
 //! [0]
 
+void MainWidget::mouseMoveEvent(QMouseEvent *event) // fonction virtuelle de QWidget
+{
+    this->setMouseTracking(true);
+    QPoint positionSouris = event->pos();
+    cam.orienter(positionSouris.x(), positionSouris.y());
+}
+
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
     // Decrease angular speed (friction)
     angularSpeed *= 0.99;
-
+    alpha+=vitesseRota;
     // Stop rotation when speed goes below threshold
     if (angularSpeed < 0.01) {
         angularSpeed = 0.0;
@@ -113,10 +122,28 @@ void MainWidget::timerEvent(QTimerEvent *)
         rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
 
         // Request an update
-        update();
+
     }
+    update();
 }
 //! [1]
+
+void MainWidget::keyPressEvent(QKeyEvent* event)
+{
+    switch(event->key())
+    {
+        case Qt::Key_Plus : vitesseRota+= 0.1;
+        case Qt::Key_Minus : vitesseRota-= 0.1;
+
+    }
+    cam.deplacer(event);
+    update();
+}
+
+void MainWidget::keyReleaseEvent(QKeyEvent* event)
+{
+
+}
 
 void MainWidget::initializeGL()
 {
@@ -139,7 +166,9 @@ void MainWidget::initializeGL()
     geometries = new GeometryEngine;
 
     // Use QBasicTimer because its faster than QTimer
-    timer.start(12, this);
+    timer.start(1000/fps,this);
+
+    cam = camera(QVector3D(1, 1, 1), QVector3D(0, 0, 0), QVector3D(0, 1, 0), 0.5, 0.5);
 }
 
 //! [3]
@@ -188,7 +217,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 7.0, fov = 45.0;
+    const qreal zNear = 3.0, zFar = 15.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -210,8 +239,8 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(0.0, 0.0, -5.0);
     matrix.rotate(rotation);
-
-    matrix.lookAt(QVector3D(0.0f, 1.0f, 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
+    //matrix.lookAt(QVector3D(1.0f*cos(alpha), 1.0f*sin(alpha), 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
+    cam.lookAt(matrix);
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]

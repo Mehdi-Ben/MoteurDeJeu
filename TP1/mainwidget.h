@@ -52,10 +52,9 @@
 #define MAINWIDGET_H
 
 #include "geometryengine.h"
-
+#include "camera.h"
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
-#include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
@@ -69,14 +68,20 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit MainWidget(QWidget *parent = 0);
+    explicit MainWidget(QWidget *parent = 0,int fps = 60);
     ~MainWidget();
+    int fps;
+    float vitesseRota;
+
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void timerEvent(QTimerEvent *e) override;
 
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+    void mouseMoveEvent(QMouseEvent *event);
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;
@@ -97,6 +102,8 @@ private:
     QVector3D rotationAxis;
     qreal angularSpeed;
     QQuaternion rotation;
+    double alpha;
+    camera cam;
 };
 
 #endif // MAINWIDGET_H

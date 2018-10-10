@@ -7,11 +7,13 @@ SOURCES += main.cpp
 
 SOURCES += \
     mainwidget.cpp \
-    geometryengine.cpp
+    geometryengine.cpp \
+    camera.cpp
 
 HEADERS += \
     mainwidget.h \
-    geometryengine.h
+    geometryengine.h \
+    camera.h
 
 RESOURCES += \
     shaders.qrc \
