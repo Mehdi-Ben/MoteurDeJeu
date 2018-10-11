@@ -27,11 +27,11 @@ void camera::orienter(int xRel, int yRel, int zRel)
 
     // Limitation de l'angle phi
 
-    if(phi > 179)
-        phi = 179.0;
+    if(phi > 89)
+        phi = 89.0;
 
-    else if(phi < -179)
-        phi = -179.0;
+    else if(phi < -89)
+        phi = -89.0;
 
 
     // Conversion des angles en radian
@@ -142,6 +142,13 @@ void camera::lookAt(QMatrix4x4 &modelview)
     modelview.lookAt(position, pointCible, axeVerti);
 }
 
+void camera::lookAt(QMatrix4x4 &modelview,double alpha)
+{
+    // Actualisation de la vue dans la matrice
+
+    QVector3D newPos = QVector3D(position.x()*cos(alpha),position.y()*sin(alpha),position.z());
+    modelview.lookAt(newPos, pointCible, axeVerti);
+}
 void camera::setPointcible(QVector3D pointCible)
 {
     // Calcul du vecteur orientation

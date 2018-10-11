@@ -13,6 +13,7 @@ public:
     void orienter(int xRel, int yRel, int zRel);
     void deplacer(QKeyEvent* event);
     void lookAt(QMatrix4x4 &modelview);
+    void lookAt(QMatrix4x4 &modelview,double alpha = 0);
     void setPointcible(QVector3D pointCible);
     void setPosition(QVector3D position);
     // Getters et Setters

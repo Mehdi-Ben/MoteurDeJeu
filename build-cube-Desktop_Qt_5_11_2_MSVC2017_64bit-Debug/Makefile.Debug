@@ -187,6 +187,7 @@ debug\qrc_shaders.cpp: ..\TP1\shaders.qrc \
 
 debug\qrc_textures.cpp: ..\TP1\textures.qrc \
 		C:\Qt\5.11.2\msvc2017_64\bin\rcc.exe \
+		..\TP1\degrade.png \
 		..\TP1\heightMap.png \
 		..\TP1\cube.png
 	C:\Qt\5.11.2\msvc2017_64\bin\rcc.exe -name textures ..\TP1\textures.qrc -o debug\qrc_textures.cpp

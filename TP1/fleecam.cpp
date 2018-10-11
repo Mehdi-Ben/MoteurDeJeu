@@ -1,6 +1,6 @@
 #include "fleecam.h"
 
-fleecam::fleecam() : posX(0.0),posY(0.0),posZ(0.0),pitchX(0.0),headingY(0.0),rollZ(0.0)
+fleecam::fleecam() : posX(0.0),posY(0.0),posZ(0.0),pitchX(1.0),headingY(0.0),rollZ(1.0)
 {
 
 }

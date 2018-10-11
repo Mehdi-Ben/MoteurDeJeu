@@ -111,16 +111,12 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event) // fonction virtuelle de QWi
     fleeCam.updatePitchX(y);
     fleeCam.updateRollZ(x);
 }
-//0 x width
-// 0 x/width 1
-// 0 (x*360)/width 360
-//-180 ((x*360)/width)-180 180
-//-180 x 180
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
     // Decrease angular speed (friction)
     angularSpeed *= 0.99;
+
     alpha+=vitesseRota;
     // Stop rotation when speed goes below threshold
     if (angularSpeed < 0.01) {
@@ -140,15 +136,19 @@ void MainWidget::keyPressEvent(QKeyEvent* event)
 {
     switch(event->key())
     {
-        case Qt::Key_Plus : vitesseRota+= 0.1;
-        case Qt::Key_Minus : vitesseRota-= 0.1;
+        case Qt::Key_Plus : vitesseRota+= 0.1;break;
+        case Qt::Key_Minus : vitesseRota-= 0.1;break;
 
     }
-
+    if(vitesseRota < 0)
+    {
+        vitesseRota=0;
+    }
+    //cam.deplacer(event);
         // Avancée de la caméra
         if(event->key() == Qt::Key_Up)
         {
-            fleeCam.updatePosY(1);
+            fleeCam.updatePosZ(1);
         }
 
 
@@ -156,7 +156,7 @@ void MainWidget::keyPressEvent(QKeyEvent* event)
 
         if(event->key() == Qt::Key_Down)
         {
-            fleeCam.updatePosY(-1);
+            fleeCam.updatePosZ(-1);
         }
 
 
@@ -233,7 +233,7 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
+    texture = new QOpenGLTexture(QImage(":/degrade.png").mirrored());
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -276,13 +276,17 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(0.0, 0.0, -5.0);
     //matrix.rotate(rotation);
-    //matrix.lookAt(QVector3D(1.0f*cos(alpha), 1.0f*sin(alpha), 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
-    //cam.lookAt(matrix);
-    matrix.rotate(fleeCam.pitchX,QVector3D(1,0,0));
-    //matrix.rotate(fleeCam.headingY,QVector3D(0,1,0));
-    matrix.rotate(fleeCam.rollZ,QVector3D(0,0,1));
-    matrix.translate(fleeCam.posX,fleeCam.posY,fleeCam.posZ);
-    // Set modelview-projection matrix
+    if(vitesseRota > 0)
+    {
+        matrix.lookAt(QVector3D(1.0f*cos(alpha), 1.0f*sin(alpha), 1.0f),QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 0.0f, 1.0f));
+    }else{
+        matrix.rotate(fleeCam.pitchX,QVector3D(1,0,0));
+        matrix.rotate(fleeCam.headingY,QVector3D(0,1,0));
+        matrix.rotate(fleeCam.rollZ,QVector3D(0,0,1));
+        matrix.translate(fleeCam.posX,fleeCam.posY,fleeCam.posZ);
+    }
+    //cam.lookAt(matrix,alpha);
+   // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
 

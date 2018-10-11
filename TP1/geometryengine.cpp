@@ -167,7 +167,7 @@ void GeometryEngine::initPlaneGeometry16()
     {
         for(int x=0;x<16;x++)
         {
-            vertices[cpt] = {QVector3D(((2*x)/15.0)-1, ((2*y)/15.0)-1, hMap.pixelColor(x,y).value()/255.0), QVector2D(x/15.0,y/15.0)};
+            vertices[cpt] = {QVector3D(((2*x)/15.0)-1, ((2*y)/15.0)-1, hMap.pixelColor(x,y).value()/255.0), QVector2D((hMap.pixelColor(x,y).value()/255.0)*0.98+0.01,5)};
             cpt++;
         }
     }
